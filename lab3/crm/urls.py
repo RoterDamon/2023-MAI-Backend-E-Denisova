@@ -7,5 +7,5 @@ urlpatterns = [
     path('profile', views.art_shop_profile, name='profile'),
     path('arts_list', views.arts_list, name='arts_list'),
     path('categories', views.categories, name='categories'),
-    path('category/<int:id_category>/', views.category, name='category'),
+    path('add', views.add_genre, name='genre'),
 ]
