@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Веб-сервер</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></meta>
+        <h1>Hello from Django!</h1>
+    </head>
+    <body>
+        <h1>Here you can buy works of art.</h1>
+        <ul>
+            <li><a href="http://localhost:8000/shop/profile">Profile</a></li>
+            <li><a href="http://localhost:8000/shop/arts_list">Arts</a></li>
+            <li><a href="http://localhost:8000/shop/category/1">Categories</a></li>
+            <form method="post" action="add">
+                {% csrf_token %}
+                <p>Add Genre name:<br> <input name="name" /></p>
+                <input type="submit" value="Send" />
+            </form>
+        </ul>
+    </body>
+</html>
