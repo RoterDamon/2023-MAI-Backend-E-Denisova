@@ -3,25 +3,29 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-
 # Create your views here.
 
-@require_http_methods(["GET", "POST"])
+
 def index(request):
     return render(request, "home.html")
 
 
-def art_shop_profile(request):
-    user_profile = {
-        'username': 'Kate',
-        'email': 'kate@gmail.com',
-        'age': 21,
-        'gender': 'female',
-        'location': 'Russia'
-    }
-    return JsonResponse(user_profile)
+@require_http_methods(["GET", "POST"])
+def profile(request):
+    if request.method == "GET":
+        user_profile = {
+            'username': 'Kate',
+            'email': 'kate@gmail.com',
+            'age': 21,
+            'gender': 'female',
+            'location': 'Russia'
+        }
+        return JsonResponse(user_profile)
+    else:
+        return HttpResponseBadRequest("<h2>Invalid request method!</h2>")
 
 
+@require_http_methods(["GET", "POST"])
 def arts_list(request):
     if request.method == "GET":
         art_id_1 = request.GET.get("art_id", 1)
@@ -38,6 +42,7 @@ def arts_list(request):
         return HttpResponseBadRequest("<h2>Invalid request method!</h2>")
 
 
+@require_http_methods(["GET", "POST"])
 def categories(request):
     if request.method == 'GET':
         genre_categories = ['Landscape', 'Seascape', 'Portrait', 'Still-life']
@@ -46,6 +51,7 @@ def categories(request):
         return HttpResponseBadRequest("<h2>Invalid request method!</h2>")
 
 
+@require_http_methods(["GET", "POST"])
 @csrf_exempt  # разрешаем делать POST запрос без куки
 def add_genre(request):
     if request.method == "POST":
