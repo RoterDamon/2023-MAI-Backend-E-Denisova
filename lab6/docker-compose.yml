@@ -32,14 +32,14 @@ services:
     container_name: django
     #restart: always
     ports:
-      - "8080:8080"
+      - "8000:8000"
     networks:
       - app-network
     depends_on:
       - postgres
     command: sh -c "
       python3 manage.py migrate &&
-      python3 manage.py runserver localhost:8080"
+      python3 manage.py runserver localhost:8000"
 
 
 networks:
