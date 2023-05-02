@@ -1,23 +1,27 @@
 version: "3.3"
 services:
-  postgres:
+  db:
     image: postgres:latest
-    container_name: postgres
     environment:
-      - POSTGRES_DB=shop
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      POSTGRES_DB: shop
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'SELECT 1; | psql -U postgres -d shop" ]
+      interval: 3s
+      timeout: 5s
+    restart: unless-stopped
     ports:
-      - "5433:5432"
+      - "5434:5432"
     volumes:
-      - .:/docker-entrypoint-initdb.d
+      - ./pgdata:/var/lib/postgresql/data
     networks:
-      - app-network
+      - db
 
   nginx:
     image: nginx:latest
-    container_name: nginx
     restart: always
     volumes:
       - ./nginx/html:/usr/share/nginx/html/
@@ -25,24 +29,30 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - app-network
+      - db
+    depends_on:
+      django:
+        condition: service_healthy
 
   django:
     build: .
-    container_name: django
-    #restart: always
-    ports:
-      - "8000:8000"
-    networks:
-      - app-network
-    depends_on:
-      - postgres
     command: sh -c "
       python3 manage.py migrate &&
       python3 manage.py runserver localhost:8000"
-
+    ports:
+      - "8081:8000"
+    networks:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8000/shop/"]
+      interval: 3s
+      timeout: 5s
+    restart: unless-stopped
 
 networks:
-  app-network:
-    driver: "bridge"
-    external: false
+  db:
+    driver: bridge
+    #external: false
